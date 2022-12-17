@@ -8,7 +8,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.dead = False
         self.animations = None
-        self.image = pygame.Surface((32, 64))
+        self.image = pygame.Surface((32, 64))  # self.animations["idle"][self.frame_index]
         self.image.fill("red")
         self.rect = self.image.get_rect(topleft=pos)
         self.frame_index = 0
@@ -24,11 +24,23 @@ class Player(pygame.sprite.Sprite):
         self.jump_count = 0
 
     def import_character_assets(self):
-        character_path = "media/character/"
+        # character_path = "media/character/character.png"
+        character_path = "media/thief.png"
         self.animations = {"idle": [], "run": [], "jump": [], "fall": []}
-        for animation in self.animations.keys():
-            full_path = character_path + animation
-            self.animations[animation] = import_folder(full_path)
+        # for animation in self.animations.keys():
+        #     full_path = character_path + animation
+        #     self.animations[animation] = import_folder(full_path)
+
+        # TODO import character sprite sheet and feed it into self.animations
+
+    def animate(self):
+        animation = self.animations["run"]
+
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
+
+        self.image = animation[int(self.frame_index)]
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -60,3 +72,4 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.get_input()
         self.check_death()
+        # self.animate()

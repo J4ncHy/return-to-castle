@@ -1,4 +1,6 @@
 import pygame
+
+from Enemy import Enemy
 from Tiles import Tile
 from settings import tile_size, screen_w, screen_h
 from Player import Player
@@ -10,6 +12,7 @@ class Level:
         self.powerups = None
         self.tiles = None
         self.player = None
+        self.enemies = None
 
         self.display_surface = surface
         self.setup_level(level_data)
@@ -17,6 +20,7 @@ class Level:
 
     def setup_level(self, layout):
         self.tiles = pygame.sprite.Group()
+        self.enemies = pygame.sprite.GroupSingle()
         self.player = pygame.sprite.GroupSingle()
         self.powerups = pygame.sprite.GroupSingle()
 
@@ -34,6 +38,9 @@ class Level:
                 if col == "S":
                     powerup = Powerups((x, y), tile_size)
                     self.powerups.add(powerup)
+                if col == "E":
+                    enemy = Enemy((x, y))
+                    self.enemies.add(enemy)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -41,10 +48,10 @@ class Level:
         direction_x = player.direction.x
         speed = player.default_speed
 
-        if player_x < 0.2 * screen_w and direction_x < 0:
+        if player_x < 0.4 * screen_w and direction_x < 0:
             self.world_shift = speed
             player.speed = 0
-        elif player_x > 0.8 * screen_w and direction_x > 0:
+        elif player_x > 0.6 * screen_w and direction_x > 0:
             self.world_shift = -speed
             player.speed = 0
         else:
@@ -80,7 +87,7 @@ class Level:
         player = self.player.sprite
         for sprite in self.powerups:
             if sprite.rect.colliderect(player.rect):
-                player.update_speed(2)
+                player.update_speed(1.25)
                 sprite.kill()
 
     def check_game_end(self):
@@ -104,3 +111,7 @@ class Level:
         self.powerups.draw(self.display_surface)
         self.powerups_collision()
         self.powerups.update(self.world_shift)
+
+        # Level enemies
+        self.enemies.draw(self.display_surface)
+        self.enemies.update(self.world_shift)
