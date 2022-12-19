@@ -5,6 +5,7 @@ from Tiles import Tile
 from settings import tile_size, screen_w, screen_h
 from Player import Player
 from PowerUps import Powerups
+from Bullet import Bullet
 
 
 class Level:
@@ -13,6 +14,7 @@ class Level:
         self.tiles = None
         self.player = None
         self.enemies = None
+        self.bullets = None
 
         self.display_surface = surface
         self.setup_level(level_data)
@@ -22,7 +24,7 @@ class Level:
         self.tiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.GroupSingle()
         self.player = pygame.sprite.GroupSingle()
-        self.powerups = pygame.sprite.GroupSingle()
+        self.powerups = pygame.sprite.Group()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -58,7 +60,7 @@ class Level:
             self.world_shift = 0
             player.speed = speed
 
-    def horizonal_movement_collision(self):
+    def horizonal_movement_collision_player(self):
         player = self.player.sprite
         player.rect.x += player.direction.x * player.speed
 
@@ -69,7 +71,7 @@ class Level:
                 elif player.direction.x > 0:
                     player.rect.right = sprite.rect.left
 
-    def vertical_movement_collison(self):
+    def vertical_movement_collison_player(self):
         player = self.player.sprite
         player.apply_gravity()
 
@@ -83,6 +85,25 @@ class Level:
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
 
+    def horizontal_world_movement_collision_enemies(self):
+        enemy = self.enemies.sprite
+        enemy.rect.x += enemy.direction.x * enemy.speed
+
+        for sprite in self.tiles:
+            if sprite.rect.colliderect(enemy.rect):
+                if enemy.direction.x < 0:
+                    enemy.rect.left = sprite.rect.right
+                elif enemy.direction.x > 0:
+                    enemy.rect.right = sprite.rect.left
+                enemy.direction.x *= -1
+
+    def horizontal_player_collision(self):
+        ...
+
+    def collisions_enemy(self):
+        if self.enemies.sprite.rect.colliderect(self.player.sprite.rect):
+            self.player.sprite.dead = True
+
     def powerups_collision(self):
         player = self.player.sprite
         for sprite in self.powerups:
@@ -92,7 +113,7 @@ class Level:
 
     def check_game_end(self):
         player = self.player.sprite
-        return player.rect.top > screen_h
+        return player.rect.top > screen_h or self.player.sprite.dead
 
     def draw(self):
 
@@ -103,8 +124,8 @@ class Level:
 
         # Level player
         self.player.update()
-        self.horizonal_movement_collision()
-        self.vertical_movement_collison()
+        self.horizonal_movement_collision_player()
+        self.vertical_movement_collison_player()
         self.player.draw(self.display_surface)
 
         # Level powerups
@@ -113,5 +134,7 @@ class Level:
         self.powerups.update(self.world_shift)
 
         # Level enemies
-        self.enemies.draw(self.display_surface)
         self.enemies.update(self.world_shift)
+        self.enemies.draw(self.display_surface)
+        self.collisions_enemy()
+        self.horizontal_world_movement_collision_enemies()

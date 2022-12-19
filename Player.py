@@ -1,5 +1,5 @@
 import pygame
-from support import import_folder
+from support import import_player_spritesheet, import_enemy_spritesheet
 from settings import screen_h
 
 
@@ -8,11 +8,11 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.dead = False
         self.animations = None
-        self.image = pygame.Surface((32, 64))  # self.animations["idle"][self.frame_index]
-        self.image.fill("red")
-        self.rect = self.image.get_rect(topleft=pos)
+        self.import_character_assets()
         self.frame_index = 0
         self.animation_speed = 0.15
+        self.image = self.animations["idle"][self.frame_index]
+        self.rect = self.image.get_rect(topleft=pos)
 
         # Player movement
 
@@ -25,16 +25,12 @@ class Player(pygame.sprite.Sprite):
 
     def import_character_assets(self):
         # character_path = "media/character/character.png"
-        character_path = "media/thief.png"
-        self.animations = {"idle": [], "run": [], "jump": [], "fall": []}
-        # for animation in self.animations.keys():
-        #     full_path = character_path + animation
-        #     self.animations[animation] = import_folder(full_path)
-
-        # TODO import character sprite sheet and feed it into self.animations
+        # self.animations = import_player_spritesheet(character_path, 64, 64)
+        enemy_path = "media/thief.png"
+        self.animations = import_enemy_spritesheet(enemy_path, 64, 64)
 
     def animate(self):
-        animation = self.animations["run"]
+        animation = self.animations["idle"]
 
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
@@ -72,4 +68,4 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.get_input()
         self.check_death()
-        # self.animate()
+        self.animate()

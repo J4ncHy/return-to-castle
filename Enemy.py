@@ -10,8 +10,7 @@ class Enemy(pygame.sprite.Sprite):
         self.import_enemy_assets()
         self.frame_index = 0
         self.animation_speed = 0.15
-        self.image = self.animations["idle"][0]  # pygame.Surface((32, 64))
-        # self.image.fill("green")
+        self.image = self.animations["idle"][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
 
         self.dead = False
@@ -19,15 +18,13 @@ class Enemy(pygame.sprite.Sprite):
         # Movement
 
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 8
-        self.default_speed = 8
+        self.direction.x = -1
+        self.speed = 1
         self.gravity = 0.8
-        self.jump_speed = -16
 
     def import_enemy_assets(self):
-        character_path = "media/thief.png"
-        self.animations = import_enemy_spritesheet(character_path, 64, 64)
-        print(self.animations)
+        enemy_path = "media/boss.png"
+        self.animations = import_enemy_spritesheet(enemy_path, 64, 64)
 
     def animate(self):
         animation = self.animations["idle"]
@@ -38,22 +35,10 @@ class Enemy(pygame.sprite.Sprite):
 
         self.image = animation[int(self.frame_index)]
 
-    def check_death(self):
-        return self.rect.centerx > screen_h
-
-    def move(self):
-        # TODO
-        ...
-
     def attack(self):
         # TODO
         ...
 
-    def apply_gravity(self):
-        self.direction.y += self.gravity
-        self.rect.y += self.direction.y
-
     def update(self, x_shift):
         self.rect.x += x_shift
-        self.check_death()
         self.animate()
