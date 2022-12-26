@@ -5,6 +5,7 @@ from Tiles import Tile
 from settings import tile_size, screen_w, screen_h
 from Player import Player
 from PowerUps import Powerups
+from Coin import Coin
 from Bullet import Bullet
 
 
@@ -15,16 +16,20 @@ class Level:
         self.player = None
         self.enemies = None
         self.bullets = None
+        self.coins = None
 
         self.display_surface = surface
         self.setup_level(level_data)
         self.world_shift = 0
+
+        self.score = 0
 
     def setup_level(self, layout):
         self.tiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.GroupSingle()
         self.player = pygame.sprite.GroupSingle()
         self.powerups = pygame.sprite.Group()
+        self.coins = pygame.sprite.Group()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -38,11 +43,14 @@ class Level:
                     playerSprite = Player((x, y))
                     self.player.add(playerSprite)
                 if col == "S":
-                    powerup = Powerups((x, y), tile_size)
+                    powerup = Powerups((x, y))
                     self.powerups.add(powerup)
                 if col == "E":
                     enemy = Enemy((x, y))
                     self.enemies.add(enemy)
+                if col == "C":
+                    coin = Coin((x, y))
+                    self.coins.add(coin)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -111,6 +119,13 @@ class Level:
                 player.update_speed(1.25)
                 sprite.kill()
 
+    def coin_collisions(self):
+        player = self.player.sprite
+        for sprite in self.coins:
+            if sprite.rect.colliderect(player.rect):
+                self.score += 10
+                sprite.kill()
+
     def check_game_end(self):
         player = self.player.sprite
         return player.rect.top > screen_h or self.player.sprite.dead
@@ -138,3 +153,9 @@ class Level:
         self.enemies.draw(self.display_surface)
         self.collisions_enemy()
         self.horizontal_world_movement_collision_enemies()
+
+        # Level coins
+
+        self.coins.update(self.world_shift)
+        self.coin_collisions()
+        self.coins.draw(self.display_surface)

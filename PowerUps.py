@@ -1,7 +1,7 @@
 import pygame
 
 class Powerups(pygame.sprite.Sprite):
-    def __init__(self, pos, size):
+    def __init__(self, pos):
         super().__init__()
         #powerups = import_folder("media/powerups/")
         self.image = pygame.image.load("media/powerups/speedup.png").convert_alpha()

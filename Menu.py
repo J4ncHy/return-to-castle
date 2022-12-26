@@ -4,7 +4,7 @@ from settings import screen_w, screen_h
 
 
 class Menu:
-    def __init__(self, surface, ):
+    def __init__(self, surface):
         self.state = StateEnum.PLAYING
         self.pause_between_presses = False
         self.surface = surface
@@ -24,6 +24,13 @@ class Menu:
     def state_router(self):
         if self.state == StateEnum.PAUSE_MENU:
             self.pause()
+
+    def draw_score(self, score):
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        text = font.render("SCORE: " + str(score), True, (255, 255, 255))
+        textRect = text.get_rect()
+        textRect.center = (screen_w // 13, screen_h // 20)
+        self.surface.blit(text, textRect)
 
     def pause(self):
         while self.state == StateEnum.PAUSE_MENU:
@@ -56,5 +63,6 @@ class Menu:
         self.surface.blit(text, textRect)
 
     def update(self):
+
         self.state_router()
         self.get_input()

@@ -3,9 +3,7 @@ import sys
 
 from settings import *
 from Level import Level
-from Player import Player
 from Menu import Menu
-from StateEnum import StateEnum
 
 if __name__ == "__main__":
     pygame.init()
@@ -27,6 +25,7 @@ if __name__ == "__main__":
 
         screen.fill("black")
         level.draw()
+        menu.draw_score(level.score)
 
         pygame.display.update()
         clock.tick(60)
