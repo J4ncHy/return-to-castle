@@ -1,6 +1,8 @@
 import pygame
 from support import import_player_spritesheet, import_enemy_spritesheet
 from settings import screen_h
+from Menu import Menu
+from StateEnum import StateEnum
 
 
 class Player(pygame.sprite.Sprite):
@@ -40,6 +42,9 @@ class Player(pygame.sprite.Sprite):
 
     def get_input(self):
         keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_ESCAPE]:
+            ...
 
         if keys[pygame.K_RIGHT]:
             self.direction.x = 1
