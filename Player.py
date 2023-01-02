@@ -16,6 +16,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations["idle"][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
 
+        self.lives = 3
+
         # Player movement
 
         self.direction = pygame.math.Vector2(0, 0)

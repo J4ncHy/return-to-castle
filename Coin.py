@@ -10,3 +10,4 @@ class Coin(pygame.sprite.Sprite):
 
     def update(self, x_shift):
         self.rect.x += x_shift
+ 
