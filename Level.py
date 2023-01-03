@@ -103,6 +103,8 @@ class Level:
     def horizontal_world_enemies_movement_collision(self):
         for enemy in self.enemies:
             enemy.rect.x += enemy.direction.x * enemy.speed
+            if enemy.rect.x < enemy.starting_coords[0] - 128 or enemy.rect.x > enemy.starting_coords[0] + 128:
+                enemy.direction.x *= -1
             for sprite in self.tiles:
                 if sprite.rect.colliderect(enemy.rect):
                     if enemy.direction.x < 0:

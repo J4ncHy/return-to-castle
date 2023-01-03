@@ -13,6 +13,8 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.animations["idle"][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
 
+        self.starting_coords = [pos[0], pos[1]]
+
         self.dead = False
 
         # Movement
@@ -41,4 +43,5 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self, x_shift):
         self.rect.x += x_shift
+        self.starting_coords[0] += x_shift
         self.animate()
