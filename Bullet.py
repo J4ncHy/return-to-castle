@@ -1,6 +1,6 @@
 import pygame
 
-from support import import_bullet_spritesheet
+from support import import_spritesheet
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -20,7 +20,7 @@ class Bullet(pygame.sprite.Sprite):
 
     def import_bullet_assets(self):
         bullet_path = "media/bullet.png"
-        self.animations = import_bullet_spritesheet(bullet_path, 64, 64)
+        self.animations = import_spritesheet(bullet_path, 64, 64)
 
     def animate(self):
         animation = self.animations["idle"]
