@@ -8,10 +8,12 @@ from PowerUps import Powerups
 from Coin import Coin
 from Cloud import Cloud
 from Bullet import Bullet
+from Flag import Flag
 
 
 class Level:
     def __init__(self, level_data, surface):
+        self.flag = None
         self.clouds = None
         self.powerups = None
         self.tiles = None
@@ -40,6 +42,7 @@ class Level:
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
+        self.flag = pygame.sprite.GroupSingle()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -64,6 +67,9 @@ class Level:
                 if col == "O":
                     cloud = Cloud((x, y))
                     self.clouds.add(cloud)
+                if col == "F":
+                    flag = Flag((x, y))
+                    self.flag.add(flag)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -139,6 +145,11 @@ class Level:
                 self.score += 10
                 sprite.kill()
 
+    def player_flag_collisions(self):
+        player = self.player.sprite
+        if self.flag.sprite.rect.colliderect(player.rect):
+            self.score += 100
+
     def check_game_end(self):
         player = self.player.sprite
         return player.rect.top > screen_h or self.player.sprite.dead
@@ -152,6 +163,12 @@ class Level:
 
         self.clouds.update(self.world_shift)
         self.clouds.draw(self.display_surface)
+
+        # Level flag
+
+        self.flag.update(self.world_shift)
+        self.player_flag_collisions()
+        self.flag.draw(self.display_surface)
 
         # Level tiles
         self.tiles.update(self.world_shift)
