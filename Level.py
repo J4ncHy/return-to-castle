@@ -6,11 +6,13 @@ from settings import tile_size, screen_w, screen_h
 from Player import Player
 from PowerUps import Powerups
 from Coin import Coin
+from Cloud import Cloud
 from Bullet import Bullet
 
 
 class Level:
     def __init__(self, level_data, surface):
+        self.clouds = None
         self.powerups = None
         self.tiles = None
         self.player = None
@@ -37,6 +39,7 @@ class Level:
         self.player = pygame.sprite.GroupSingle()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
+        self.clouds = pygame.sprite.Group()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -58,6 +61,9 @@ class Level:
                 if col == "C":
                     coin = Coin((x, y))
                     self.coins.add(coin)
+                if col == "O":
+                    cloud = Cloud((x, y))
+                    self.clouds.add(cloud)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -142,6 +148,11 @@ class Level:
         # Background
         self.display_surface.blit(self.background_image, (0, 0))
 
+        # Level clouds
+
+        self.clouds.update(self.world_shift)
+        self.clouds.draw(self.display_surface)
+
         # Level tiles
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
@@ -169,3 +180,5 @@ class Level:
         self.coins.update(self.world_shift)
         self.player_coin_collisions()
         self.coins.draw(self.display_surface)
+
+
