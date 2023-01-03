@@ -9,6 +9,7 @@ from Coin import Coin
 from Cloud import Cloud
 from Bullet import Bullet
 from Flag import Flag
+from SoundHandler import SoundHandler
 
 
 class Level:
@@ -22,6 +23,8 @@ class Level:
         self.bullets = None
         self.coins = None
         self.background_image = None
+
+        self.sound = SoundHandler()
 
         self.display_surface = surface
         self.setup_level(level_data)
