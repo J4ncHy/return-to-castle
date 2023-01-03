@@ -17,6 +17,7 @@ class Level:
         self.enemies = None
         self.bullets = None
         self.coins = None
+        self.background_image = None
 
         self.display_surface = surface
         self.setup_level(level_data)
@@ -24,9 +25,15 @@ class Level:
 
         self.score = 0
 
+    def import_assets(self):
+        background_img = "media/background_cloud.png"
+        self.background_image = pygame.image.load(background_img).convert_alpha()
+
     def setup_level(self, layout):
+        self.import_assets()
+
         self.tiles = pygame.sprite.Group()
-        self.enemies = pygame.sprite.GroupSingle()
+        self.enemies = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
@@ -68,7 +75,7 @@ class Level:
             self.world_shift = 0
             player.speed = speed
 
-    def horizonal_movement_collision_player(self):
+    def horizontal_world_player_movement_collision(self):
         player = self.player.sprite
         player.rect.x += player.direction.x * player.speed
 
@@ -79,7 +86,7 @@ class Level:
                 elif player.direction.x > 0:
                     player.rect.right = sprite.rect.left
 
-    def vertical_movement_collison_player(self):
+    def vertical_world_player_movement_collision(self):
         player = self.player.sprite
         player.apply_gravity()
 
@@ -93,33 +100,31 @@ class Level:
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
 
-    def horizontal_world_movement_collision_enemies(self):
-        enemy = self.enemies.sprite
-        enemy.rect.x += enemy.direction.x * enemy.speed
+    def horizontal_world_enemies_movement_collision(self):
+        for enemy in self.enemies:
+            enemy.rect.x += enemy.direction.x * enemy.speed
+            for sprite in self.tiles:
+                if sprite.rect.colliderect(enemy.rect):
+                    if enemy.direction.x < 0:
+                        enemy.rect.left = sprite.rect.right
+                    elif enemy.direction.x > 0:
+                        enemy.rect.right = sprite.rect.left
+                    enemy.direction.x *= -1
 
-        for sprite in self.tiles:
-            if sprite.rect.colliderect(enemy.rect):
-                if enemy.direction.x < 0:
-                    enemy.rect.left = sprite.rect.right
-                elif enemy.direction.x > 0:
-                    enemy.rect.right = sprite.rect.left
-                enemy.direction.x *= -1
+    def player_enemy_collision(self):
+        player = self.player.sprite
+        for sprite in self.enemies:
+            if sprite.rect.colliderect(player.rect):
+                self.player.sprite.dead = True
 
-    def horizontal_player_collision(self):
-        ...
-
-    def collisions_enemy(self):
-        if self.enemies.sprite.rect.colliderect(self.player.sprite.rect):
-            self.player.sprite.dead = True
-
-    def powerups_collision(self):
+    def player_powerups_collision(self):
         player = self.player.sprite
         for sprite in self.powerups:
             if sprite.rect.colliderect(player.rect):
                 player.update_speed(1.25)
                 sprite.kill()
 
-    def coin_collisions(self):
+    def player_coin_collisions(self):
         player = self.player.sprite
         for sprite in self.coins:
             if sprite.rect.colliderect(player.rect):
@@ -132,6 +137,9 @@ class Level:
 
     def draw(self):
 
+        # Background
+        self.display_surface.blit(self.background_image, (0, 0))
+
         # Level tiles
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
@@ -139,23 +147,23 @@ class Level:
 
         # Level player
         self.player.update()
-        self.horizonal_movement_collision_player()
-        self.vertical_movement_collison_player()
+        self.horizontal_world_player_movement_collision()
+        self.vertical_world_player_movement_collision()
         self.player.draw(self.display_surface)
 
         # Level powerups
         self.powerups.draw(self.display_surface)
-        self.powerups_collision()
+        self.player_powerups_collision()
         self.powerups.update(self.world_shift)
 
         # Level enemies
         self.enemies.update(self.world_shift)
         self.enemies.draw(self.display_surface)
-        self.collisions_enemy()
-        self.horizontal_world_movement_collision_enemies()
+        self.player_enemy_collision()
+        self.horizontal_world_enemies_movement_collision()
 
         # Level coins
 
         self.coins.update(self.world_shift)
-        self.coin_collisions()
+        self.player_coin_collisions()
         self.coins.draw(self.display_surface)
