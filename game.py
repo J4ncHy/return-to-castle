@@ -23,7 +23,6 @@ if __name__ == "__main__":
         if level.check_game_end():
             break
 
-        screen.fill("black")
         level.draw()
         menu.draw_score(level.score)
 
