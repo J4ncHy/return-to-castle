@@ -41,7 +41,7 @@ def import_enemy_spritesheet(path, width, height):
     return animation_library
 
 
-def import_bullet_spritesheet(path, width, height):
+def import_spritesheet(path, width, height):
     sprite_sheet = pygame.image.load(path).convert_alpha()
     wid = sprite_sheet.get_width()
 
