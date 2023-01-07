@@ -3,7 +3,7 @@ import csv
 
 from Enemy import Enemy
 from Tiles import Tile
-from settings import tile_size, screen_w, screen_h, level_map
+from settings import tile_size, screen_w, screen_h
 from Player import Player
 from PowerUps import Powerups
 from Coin import Coin
