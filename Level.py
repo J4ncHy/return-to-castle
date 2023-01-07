@@ -17,7 +17,7 @@ class Level:
     def __init__(self, surface):
         self.level = 0
         self.cnt = 0
-        self.tileset = None
+        self.ambience = [(135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
 
         self.enemies_guns = None
         self.flag = None
@@ -26,7 +26,7 @@ class Level:
         self.tiles = None
         self.player = None
         self.enemies_weak = None
-        self.bullets = None
+        #self.bullets = None
         self.coins = None
         self.background_image = None
 
@@ -40,7 +40,7 @@ class Level:
 
     def import_assets(self):
         # Function imports all required assets, and specifically the tile set is saved into an array for easier use
-        background_img = "media/background_cloud.png"
+        background_img = "level/background/BG{}.png".format(self.level)  # "media/background_cloud.png"
         self.background_image = pygame.image.load(background_img).convert_alpha()
 
     def level_handler(self):
@@ -53,13 +53,11 @@ class Level:
         del self.tiles
         del self.player
         del self.enemies_weak
-        del self.bullets
+        #del self.bullets
         del self.coins
         del self.background_image
 
         self.world_shift = 0
-        #self.import_level_from_tilemap()
-        #self.setup_level(level_map[self.level])
         self.setup_level(self.import_level_from_tilemap())
 
     def import_level_from_tilemap(self):
@@ -83,7 +81,7 @@ class Level:
         self.coins = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
         self.flag = pygame.sprite.GroupSingle()
-        print(layout)
+
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
                 y = i * tile_size
@@ -197,6 +195,7 @@ class Level:
     def draw(self):
 
         # Background
+        self.display_surface.fill(self.ambience[self.level])
         self.display_surface.blit(self.background_image, (0, 0))
 
         # Level clouds
