@@ -1,8 +1,9 @@
 import pygame
+import csv
 
 from Enemy import Enemy
 from Tiles import Tile
-from settings import tile_size, screen_w, screen_h
+from settings import tile_size, screen_w, screen_h, level_map
 from Player import Player
 from PowerUps import Powerups
 from Coin import Coin
@@ -13,13 +14,18 @@ from SoundHandler import SoundHandler
 
 
 class Level:
-    def __init__(self, level_data, surface):
+    def __init__(self, surface):
+        self.level = 0
+        self.cnt = 0
+        self.tileset = None
+
+        self.enemies_guns = None
         self.flag = None
         self.clouds = None
         self.powerups = None
         self.tiles = None
         self.player = None
-        self.enemies = None
+        self.enemies_weak = None
         self.bullets = None
         self.coins = None
         self.background_image = None
@@ -27,52 +33,83 @@ class Level:
         self.sound = SoundHandler()
 
         self.display_surface = surface
-        self.setup_level(level_data)
+        self.setup_level(self.import_level_from_tilemap())
         self.world_shift = 0
 
         self.score = 0
 
     def import_assets(self):
+        # Function imports all required assets, and specifically the tile set is saved into an array for easier use
         background_img = "media/background_cloud.png"
         self.background_image = pygame.image.load(background_img).convert_alpha()
+
+    def level_handler(self):
+        self.score += 100
+        self.level += 1
+        del self.enemies_guns
+        del self.flag
+        del self.clouds
+        del self.powerups
+        del self.tiles
+        del self.player
+        del self.enemies_weak
+        del self.bullets
+        del self.coins
+        del self.background_image
+
+        self.world_shift = 0
+        #self.import_level_from_tilemap()
+        #self.setup_level(level_map[self.level])
+        self.setup_level(self.import_level_from_tilemap())
+
+    def import_level_from_tilemap(self):
+        level_arr = []
+        with open("level/level{}.csv".format(self.level), newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in spamreader:
+                # print(', '.join(row))
+                level_arr.append(row)
+            tmp = []
+        return level_arr
 
     def setup_level(self, layout):
         self.import_assets()
 
         self.tiles = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()
+        self.enemies_weak = pygame.sprite.Group()
+        self.enemies_guns = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
         self.flag = pygame.sprite.GroupSingle()
-
+        print(layout)
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
                 y = i * tile_size
                 x = j * tile_size
 
-                if col == "X":
-                    tile = Tile((x, y), tile_size)
-                    self.tiles.add(tile)
-                if col == "P":
+                if col == "49":
                     playerSprite = Player((x, y))
                     self.player.add(playerSprite)
-                if col == "S":
+                elif col == "45":
                     powerup = Powerups((x, y))
                     self.powerups.add(powerup)
-                if col == "E":
+                elif col == "42":
                     enemy = Enemy((x, y))
-                    self.enemies.add(enemy)
-                if col == "C":
+                    self.enemies_weak.add(enemy)
+                elif col == "50":
                     coin = Coin((x, y))
                     self.coins.add(coin)
-                if col == "O":
+                elif col == "48":
                     cloud = Cloud((x, y))
                     self.clouds.add(cloud)
-                if col == "F":
+                elif col == "43":
                     flag = Flag((x, y))
                     self.flag.add(flag)
+                elif int(col) >= 0:
+                    tile = Tile((x, y), tile_size, col)
+                    self.tiles.add(tile)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -116,7 +153,7 @@ class Level:
                     player.direction.y = 0
 
     def horizontal_world_enemies_movement_collision(self):
-        for enemy in self.enemies:
+        for enemy in self.enemies_weak:
             enemy.rect.x += enemy.direction.x * enemy.speed
             if enemy.rect.x < enemy.starting_coords[0] - 128 or enemy.rect.x > enemy.starting_coords[0] + 128:
                 enemy.direction.x *= -1
@@ -130,7 +167,7 @@ class Level:
 
     def player_enemy_collision(self):
         player = self.player.sprite
-        for sprite in self.enemies:
+        for sprite in self.enemies_weak:
             if sprite.rect.colliderect(player.rect):
                 self.player.sprite.dead = True
 
@@ -151,7 +188,7 @@ class Level:
     def player_flag_collisions(self):
         player = self.player.sprite
         if self.flag.sprite.rect.colliderect(player.rect):
-            self.score += 100
+            self.level_handler()
 
     def check_game_end(self):
         player = self.player.sprite
@@ -170,7 +207,6 @@ class Level:
         # Level flag
 
         self.flag.update(self.world_shift)
-        self.player_flag_collisions()
         self.flag.draw(self.display_surface)
 
         # Level tiles
@@ -190,8 +226,8 @@ class Level:
         self.powerups.update(self.world_shift)
 
         # Level enemies
-        self.enemies.update(self.world_shift)
-        self.enemies.draw(self.display_surface)
+        self.enemies_weak.update(self.world_shift)
+        self.enemies_weak.draw(self.display_surface)
         self.player_enemy_collision()
         self.horizontal_world_enemies_movement_collision()
 
@@ -201,4 +237,4 @@ class Level:
         self.player_coin_collisions()
         self.coins.draw(self.display_surface)
 
-
+        self.player_flag_collisions()

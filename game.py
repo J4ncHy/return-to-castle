@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     screen = pygame.display.set_mode((screen_w, screen_h))
     clock = pygame.time.Clock()
-    level = Level(level_map, screen)
+    level = Level(screen)
     menu = Menu(screen)
 
     while True:
