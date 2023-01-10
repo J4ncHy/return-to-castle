@@ -1,12 +1,10 @@
 import pygame
-from support import import_player_spritesheet, import_enemy_spritesheet
+from support import import_enemy_spritesheet
 from settings import screen_h
-from Menu import Menu
-from StateEnum import StateEnum
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, sound):
         super().__init__()
         self.dead = False
         self.animations = None
@@ -26,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.8
         self.jump_speed = -16
         self.jump_count = 0
+
+        self.sound = sound
 
     def import_character_assets(self):
         # character_path = "media/character/character.png"
@@ -64,6 +64,7 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.direction.y = self.jump_speed
         self.jump_count += 1
+        self.sound.play_jump()
 
     def update_speed(self, multiplier):
         self.default_speed *= multiplier
