@@ -3,9 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level0.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
-        "."
+        ".",
+        "level_data"
     ],
     "fileStates": {
         "Tileset.tsx": {
@@ -24,6 +25,14 @@
             "viewCenter": {
                 "x": -60,
                 "y": -225.5
+            }
+        },
+        "level_data/islands.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 799.9586798202574,
+                "y": 192.13883580393582
             }
         },
         "level_data/level0tmx.tmx": {
@@ -51,11 +60,15 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 50,
     "openFiles": [
-        "level0.tmx"
+        "level_data/level0tmx.tmx",
+        "level_data/tileset.tsx",
+        "level_data/islands.tmx"
     ],
     "project": "level0.tiled-project",
     "recentFiles": [
+        "level_data/level0tmx.tmx",
         "level_data/tileset.tsx",
+        "level_data/islands.tmx",
         "flag.tsx",
         "Tileset.tsx",
         "player.tsx",

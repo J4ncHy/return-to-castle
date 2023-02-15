@@ -1,13 +1,15 @@
 import pygame
 
 
-class Tile(pygame.sprite.Sprite):
+class Tiles(pygame.sprite.Sprite):
     def __init__(self, pos, size, tile_index):
         super().__init__()
         self.image = pygame.Surface((size, size))
         self.tile_index = int(tile_index)
         self.import_assets()
-        self.rect = self.image.get_rect(topleft=pos)
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.mask.get_rect(topleft=pos)
 
     def import_assets(self):
         tile = "level/tiles/sprite_" + f"{self.tile_index:02}" + ".png"

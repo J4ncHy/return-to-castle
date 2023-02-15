@@ -8,6 +8,7 @@ class Powerups(pygame.sprite.Sprite):
         self.import_sprite()
 
         self.rect = self.image.get_rect(topleft=pos)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def import_sprite(self):
         path = "media/powerups/speedup.png"

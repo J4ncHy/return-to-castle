@@ -13,6 +13,7 @@ class Flag(pygame.sprite.Sprite):
         self.animation_speed = 0.15
         self.image = self.animations[self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def import_assets(self):
         flag_image = "media/flag.png"
