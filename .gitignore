@@ -1,8 +1,10 @@
 .idea
 
 TODO.md
+__pycache__/
 
 data/
 old/
 media/dump
 /media/font/
+
