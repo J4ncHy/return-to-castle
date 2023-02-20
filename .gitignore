@@ -1,12 +1,12 @@
 .idea
-node_modules/
+node_modules
 
 TODO.md
-__pycache__/
+__pycache__
 
-data/
-old/
+data
+old
 media/dump
-/media/font/
+media/font
 
 src/
