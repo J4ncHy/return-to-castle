@@ -27,6 +27,10 @@ const mod = model("scoreboards", schema);
 app.put("/api/create", async (req: Request, res: Response) => {
     try {
         //console.log(req.body);
+        let max_score: { [id: number]: number } = { 0: 50, 1: 150, 2: 250, 3: 350 };
+
+        if (req.body.score > max_score[req.body.level] || req.body.score < 0) throw new Error("Incorrect score");
+
         let insert = new mod({ player: req.body.player, level: req.body.level, score: req.body.score, time: req.body.time });
         await insert.save();
     } catch (error) {
@@ -34,15 +38,21 @@ app.put("/api/create", async (req: Request, res: Response) => {
         res.status(400).send("Bad data");
     }
 
-    res.send("Add successful");
+    res.send("Successfully added");
 });
 
 app.get("/api/read", (req: Request, res: Response) => {
     res.send("read");
 });
 
-app.get("/api/read-best", (req: Request, res: Response) => {
-    res.send("read-best");
+app.get("/api/read-per-level", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const results = await mod.find({ level: req.body.level }).sort({ score: -1, time: 1 }).limit(5).exec();
+
+        res.send(results);
+    } catch (error) {
+        res.status(500).send(error);
+    }
 });
 
 app.put("/api/update", (req: Request, res: Response) => {
