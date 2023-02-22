@@ -41,10 +41,6 @@ app.put("/api/create", async (req: Request, res: Response) => {
     res.send("Successfully added");
 });
 
-app.get("/api/read", (req: Request, res: Response) => {
-    res.send("read");
-});
-
 app.get("/api/read-per-level", async (req: Request, res: Response): Promise<void> => {
     try {
         const results = await mod.find({ level: req.body.level }).sort({ score: -1, time: 1 }).limit(5).exec();
@@ -55,6 +51,13 @@ app.get("/api/read-per-level", async (req: Request, res: Response): Promise<void
     }
 });
 
+/*
+app.get("/api/read", (req: Request, res: Response) => {
+    res.send("read");
+});
+*/
+
+/*
 app.put("/api/update", (req: Request, res: Response) => {
     res.send("create test");
 });
@@ -62,5 +65,6 @@ app.put("/api/update", (req: Request, res: Response) => {
 app.delete("/api/delete", (req: Request, res: Response) => {
     res.send("create test");
 });
+*/
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
