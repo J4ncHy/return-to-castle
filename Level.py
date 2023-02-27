@@ -12,13 +12,14 @@ from Bullet import Bullet
 from Flag import Flag
 from SoundHandler import SoundHandler
 from HighscoreHandler import write_score
+from Spikes import Spike
 
 
 class Level:
     def __init__(self, surface, menu):
         self.level = 0
         self.cnt = 0
-        self.ambience = [(135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
+        self.ambience = [(135, 206, 235), (135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
 
         self.menu = menu
 
@@ -31,7 +32,8 @@ class Level:
         self.tiles = None
         self.player = None
         self.enemies_weak = None
-        #self.bullets = None
+        # self.bullets = None
+        self.spikes = None
         self.coins = None
         self.background_image = None
 
@@ -62,6 +64,7 @@ class Level:
         del self.enemies_weak
         del self.coins
         del self.background_image
+        del self.spikes
 
         self.world_shift = 0
         self.setup_level(self.import_level_from_tilemap())
@@ -71,12 +74,11 @@ class Level:
         with open("level/level{}.csv".format(self.level), newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in spamreader:
-                # print(', '.join(row))
                 level_arr.append(row)
-            tmp = []
         return level_arr
 
     def setup_level(self, layout):
+        coords = {"coin": 0, "player": 0, "enemy": 0}
         self.import_assets()
 
         self.start_time = pygame.time.get_ticks()
@@ -89,6 +91,7 @@ class Level:
         self.coins = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
         self.flag = pygame.sprite.GroupSingle()
+        self.spikes = pygame.sprite.Group()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -98,6 +101,8 @@ class Level:
                 if col == "49":
                     playerSprite = Player((x, y), self.sound)
                     self.player.add(playerSprite)
+                    if coords["player"] == 0:
+                        coords["player"] = x
                 elif col == "45":
                     powerup = Powerups((x, y))
                     self.powerups.add(powerup)
@@ -107,16 +112,27 @@ class Level:
                 elif col == "50":
                     coin = Coin((x, y))
                     self.coins.add(coin)
+                    if coords["coin"] == 0:
+                        coords["coin"] = x
                 elif col == "48":
                     cloud = Cloud((x, y))
                     self.clouds.add(cloud)
                 elif col == "43":
                     flag = Flag((x, y))
                     self.flag.add(flag)
+                elif col == "52":
+                    spike = Spike((x, y))
+                    self.spikes.add(spike)
                 elif int(col) >= 0:
                     tile = Tiles((x, y), tile_size, col)
                     self.tiles.add(tile)
 
+        if self.level == 0:
+            self.menu.createText(pygame.Rect(coords["player"], 200, 250, 180), "Use the arrow keys to move and jump")
+            self.menu.createText(pygame.Rect(coords["coin"], 200, 120, 180), "Pick up coins")
+            self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle")
+            self.menu.createText(pygame.Rect(1900, 200, 270, 180), "They hold your princess hostage")
+            self.menu.createText(pygame.Rect(1900, 200, 270, 180), "You need to save her")
 
     def scroll_x(self):
         player = self.player.sprite
@@ -151,7 +167,7 @@ class Level:
 
         for tile in self.tiles:
             if tile.rect.colliderect(player.rect):
-            #if pygame.sprite.collide_mask(player, tile):
+                # if pygame.sprite.collide_mask(player, tile):
                 if player.direction.y > 0:
                     player.rect.bottom = tile.rect.top
                     player.direction.y = 0
@@ -167,7 +183,7 @@ class Level:
                 enemy.direction.x *= -1
             for tile in self.tiles:
                 if tile.rect.colliderect(enemy.rect):
-                #if pygame.sprite.collide_mask(enemy, tile):
+                    # if pygame.sprite.collide_mask(enemy, tile):
                     if enemy.direction.x < 0:
                         enemy.rect.left = tile.rect.right
                     elif enemy.direction.x > 0:
@@ -177,8 +193,11 @@ class Level:
     def player_enemy_collision(self):
         player = self.player.sprite
         for enemy in self.enemies_weak:
-            if pygame.sprite.collide_mask(player, enemy):
-                player.dead = True
+            if pygame.sprite.collide_mask(player, enemy) and enemy.status != "dead":
+                if player.attack:
+                    enemy.status = "dead"
+                else:
+                    player.dead = True
 
     def player_powerups_collision(self):
         player = self.player.sprite
@@ -204,14 +223,23 @@ class Level:
             write_score(level=self.level, score=self.score, time=round(time, 1))
             self.level_handler()
 
+    def player_spikes_collisions(self):
+        player = self.player.sprite
+        for spike in self.spikes:
+            if pygame.sprite.collide_mask(player, spike):
+                #self.score += 10
+                player.kill()
+                print("test")
+                #self.sound.play_coin()
 
     def check_game_end(self):
         player = self.player.sprite
         return player.rect.top > screen_h or self.player.sprite.dead
 
-    def draw(self):
+    def draw(self, ticks):
 
         # Background
+
         self.display_surface.fill(self.ambience[self.level])
         self.display_surface.blit(self.background_image, (0, 0))
 
@@ -253,11 +281,19 @@ class Level:
         self.player_coin_collisions()
         self.coins.draw(self.display_surface)
 
+        # Level spikes
+
+        self.spikes.update(self.world_shift)
+        self.player_spikes_collisions()
+        self.spikes.draw(self.display_surface)
+
         # Draw menu items
 
-        self.menu.draw_score(self.score)
-        time = (pygame.time.get_ticks() - self.start_time) / 1000
-        self.menu.draw_time(round(time, 1))
+        # self.menu.draw_score(self.score)
+        # time = (pygame.time.get_ticks() - self.start_time) / 1000
+        # self.menu.draw_time(round(time, 1))
+
+        self.menu.update(ticks, self.world_shift, self.player.sprite.rect.x)
 
         # Level player collision
 

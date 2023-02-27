@@ -3,7 +3,7 @@ from StateEnum import StateEnum
 from settings import screen_w, screen_h
 from HighscoreHandler import read_score
 
-class Menu:
+class Menu2:
     def __init__(self, surface):
         self.state = StateEnum.MAIN_MENU
         self.stack_state = [StateEnum.MAIN_MENU]

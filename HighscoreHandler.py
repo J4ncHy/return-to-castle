@@ -9,9 +9,10 @@ def read_score():
     return json_object
 
 
-def write_score(level, score, time):
+def write_score( level, score, time):
     arr = read_score()
     scoreTemplate = {
+        #"player": "Janchy",
         "level": level+1,
         "score": score,
         "time": time

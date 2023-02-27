@@ -18,6 +18,9 @@ class Enemy(pygame.sprite.Sprite):
 
         self.dead = False
 
+        self.status = "idle"
+        self.facing_right = True
+
         # Movement
 
         self.direction = pygame.math.Vector2(0, 0)
@@ -30,13 +33,38 @@ class Enemy(pygame.sprite.Sprite):
         self.animations = import_enemy_spritesheet(enemy_path, 64, 64)
 
     def animate(self):
-        animation = self.animations["idle"]
+        animation = self.animations[self.status]
 
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
+            if self.status == "dead":
+                self.kill()
 
-        self.image = animation[int(self.frame_index)]
+        image = animation[int(self.frame_index)]
+
+        if self.facing_right:
+            self.image = image
+        else:
+            flipped_image = pygame.transform.flip(image, True, False)
+            flipped_image.convert_alpha()
+            flipped_image.set_colorkey((0, 0, 0))
+            self.image = flipped_image
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.mask.get_rect(topleft=self.rect.topleft)
+
+    def get_state(self):
+        if self.status == "dead":
+            self.speed = 0
+            return
+        if self.direction.x > 0:
+            self.status = "run"
+            self.facing_right = True
+        elif self.direction.x < 0:
+            self.status = "run"
+            self.facing_right = False
+        elif self.direction.x == 0:
+            self.status = "idle"
 
     def attack(self):
         # TODO
@@ -45,4 +73,5 @@ class Enemy(pygame.sprite.Sprite):
     def update(self, x_shift):
         self.rect.x += x_shift
         self.starting_coords[0] += x_shift
+        self.get_state()
         self.animate()
