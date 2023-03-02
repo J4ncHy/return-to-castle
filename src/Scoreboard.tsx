@@ -5,7 +5,7 @@ function Scoreboard(level: any) {
     const [scoreboard, setScoreboard] = useState<{ player: String; score: Number; time: Number }[]>([{ player: "", score: -1, time: -1 }]);
 
     useEffect(() => {
-        fetch("http://192.168.128.8:3012/api/read-per-level", {
+        fetch("https://rtc.picka.si/api/read-per-level", {
             method: "POST",
             body: JSON.stringify({
                 level: Number(level.level),

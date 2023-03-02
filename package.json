@@ -2,7 +2,7 @@
   "name": "rtc-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "192.168.128.8:3011",
+  "homepage": "https://rtc.picka.si/scoreboard",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
