@@ -1,4 +1,5 @@
 import json
+import requests
 
 
 def read_score():
@@ -9,16 +10,24 @@ def read_score():
     return json_object
 
 
-def write_score( level, score, time):
-    arr = read_score()
+def write_score(level, score, time):
     scoreTemplate = {
-        #"player": "Janchy",
+        "player": "TeST",
         "level": level+1,
         "score": score,
         "time": time
     }
-    arr.append(scoreTemplate)
-    json_object = json.dumps(arr, indent=4)
-    with open("data/highscore.json", "w") as outfile:
-        outfile.write(json_object)
-    outfile.close()
+    api_url = "https://rtc.picka.si/api/create"
+    response = requests.put(api_url, json=scoreTemplate)
+    print(response)
+
+"""
+    192.168.128.8:3012/api/create
+    
+    {
+        "player": "Janchy",
+        "level": 2,
+        "score": 1232,
+        "time": 25
+    }
+"""

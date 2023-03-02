@@ -3,11 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level_data/level0.tmx",
+    "activeFile": "level_data/level4.tmx",
     "expandedProjectPaths": [
         "level_data",
         "."
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "Tileset.tsx": {
             "dynamicWrapping": true,
@@ -47,8 +48,40 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 797.4794690356904,
-                "y": 66.52548938587881
+                "x": 795.8266618459792,
+                "y": 65.69908579102321
+            }
+        },
+        "level_data/level1.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 795.8266618459792,
+                "y": 65.69908579102321
+            }
+        },
+        "level_data/level2.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 800.7850834151129,
+                "y": 192.13883580393576
+            }
+        },
+        "level_data/level4.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 800.7850834151129,
+                "y": 192.13883580393576
+            }
+        },
+        "level_data/level5.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 800.7850834151129,
+                "y": 192.13883580393576
             }
         },
         "level_data/tileset.tsx": {
@@ -68,17 +101,22 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 50,
     "openFiles": [
-        "level_data/level0tmx.tmx",
-        "level_data/tileset.tsx",
-        "level_data/islands.tmx",
-        "level_data/level0.tmx"
-    ],
-    "project": "level0.tiled-project",
-    "recentFiles": [
-        "level_data/level0tmx.tmx",
+        "level_data/level1.tmx",
         "level_data/tileset.tsx",
         "level_data/islands.tmx",
         "level_data/level0.tmx",
+        "level_data/level4.tmx",
+        "level_data/level2.tmx"
+    ],
+    "project": "level0.tiled-project",
+    "recentFiles": [
+        "level_data/level1.tmx",
+        "level_data/tileset.tsx",
+        "level_data/islands.tmx",
+        "level_data/level0.tmx",
+        "level_data/level2.tmx",
+        "level_data/level4.tmx",
+        "level_data/level0tmx.tmx",
         "flag.tsx",
         "Tileset.tsx",
         "player.tsx",
