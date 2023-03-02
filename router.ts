@@ -33,12 +33,11 @@ app.put("/api/create", async (req: Request, res: Response) => {
 
         let insert = new mod({ player: req.body.player, level: req.body.level, score: req.body.score, time: req.body.time });
         await insert.save();
+        res.send("Successfully added");
     } catch (error) {
         console.log(error);
         res.status(400).send("Bad data");
     }
-
-    res.send("Successfully added");
 });
 
 app.post("/api/read-per-level", async (req: Request, res: Response): Promise<void> => {
