@@ -1,50 +1,29 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import Scoreboard from "./Scoreboard";
+// import Dropdown from "./Dropdown";
 import "./App.css";
 
 function App() {
-    const [scoreboard, setScoreboard] = useState<{ player: String; score: Number; time: Number }[]>([{ player: "", score: -1, time: -1 }]);
+    const [level, setLevel] = useState(1);
 
-    useEffect(() => {
-        fetch("http://192.168.128.8:3012/api/read-per-level", {
-            method: "POST",
-            body: JSON.stringify({
-                level: 1,
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setScoreboard([...data]);
-            });
-    }, []);
+    const handleChange = (e: any) => {
+        e.preventDefault();
+        setLevel(e.target.value);
+    };
 
-    console.log("Scoreboard", scoreboard);
+    // <Dropdown level={level} handleChange={handleChange}></Dropdown>
     return (
-        <div className="App">
-            <table className="styled-table">
-                <tr>
-                    <td></td>
-                    <td>Level 1</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Player</th>
-                    <th>Score</th>
-                    <th>Time</th>
-                </tr>
-                <tbody>
-                    {scoreboard.map((el) => (
-                        <tr>
-                            <td>{el.player}</td>
-                            <td>{String(el.score)}</td>
-                            <td>{String(el.time)}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <div className="dropdown-menu-center">
+                <select value={level} onChange={handleChange}>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <Scoreboard level={level}></Scoreboard>
+        </>
     );
 }
 
