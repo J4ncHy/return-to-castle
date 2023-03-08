@@ -7,7 +7,7 @@ const port: number = 3000;
 
 app.use(bodyParser.json());
 
-connect(`mongodb://192.168.128.8:32768/RTC_score`);
+connect(`mongodb://192.168.128.8:27017/RTC_score`);
 const db = connection;
 
 db.on("error", console.error.bind(console, "connection error: "));
