@@ -5,8 +5,8 @@
     },
     "activeFile": "level_data/level4.tmx",
     "expandedProjectPaths": [
-        "level_data",
-        "."
+        ".",
+        "level_data"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -32,16 +32,16 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 800.7850834151129,
-                "y": 192.96523939879143
+                "x": 823.0979804762152,
+                "y": 192.13883580393576
             }
         },
         "level_data/level0.tmx": {
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 799.1322762254017,
-                "y": 204.53488972677036
+                "x": 799.9586798202573,
+                "y": 192.13883580393576
             }
         },
         "level_data/level0tmx.tmx": {
@@ -56,15 +56,15 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 795.8266618459792,
-                "y": 65.69908579102321
+                "x": 799.9586798202573,
+                "y": 192.13883580393576
             }
         },
         "level_data/level2.tmx": {
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 800.7850834151129,
+                "x": 799.9586798202573,
                 "y": 192.13883580393576
             }
         },

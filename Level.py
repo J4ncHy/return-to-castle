@@ -130,8 +130,8 @@ class Level:
         if self.level == 0:
             self.menu.createText(pygame.Rect(coords["player"], 200, 250, 180), "Use the arrow keys to move and jump")
             self.menu.createText(pygame.Rect(coords["coin"], 200, 120, 180), "Pick up coins")
-            self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle")
-            self.menu.createText(pygame.Rect(1900, 200, 270, 180), "They hold your princess hostage")
+            self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle. They hold your princess hostage")
+            #self.menu.createText(pygame.Rect(1900, 200, 270, 180), "They hold your princess hostage")
             self.menu.createText(pygame.Rect(1900, 200, 270, 180), "You need to save her")
 
     def scroll_x(self):
@@ -196,6 +196,7 @@ class Level:
             if pygame.sprite.collide_mask(player, enemy) and enemy.status != "dead":
                 if player.attack:
                     enemy.status = "dead"
+                    enemy.animation_speed = 0.10
                 else:
                     player.dead = True
 
