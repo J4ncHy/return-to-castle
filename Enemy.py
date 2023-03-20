@@ -1,6 +1,6 @@
 import pygame
-from settings import screen_h
 from support import import_enemy_spritesheet
+from settings import s
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -42,7 +42,9 @@ class Enemy(pygame.sprite.Sprite):
                 self.kill()
 
         image = animation[int(self.frame_index)]
-
+        #w, h = image.get_size()
+        #image = pygame.transform.scale(image, (w * s.scale_w, h * s.scale_h))
+        #image.set_colorkey((0, 0, 0))
         if self.facing_right:
             self.image = image
         else:

@@ -1,14 +1,14 @@
 import pygame
 import pygame_gui as pgui
 #from pygame_gui.elements import UIButton
-from settings import screen_w, screen_h
+from settings import s
 from StateEnum import StateEnum
 import pygame_menu
 class Menu:
     def __init__(self, screen):
         stack = []
         self.screen = screen
-        self.manager = pgui.UIManager((64 * 50, screen_h))
+        self.manager = pgui.UIManager((64 * 50, s.screen_h))
         self.text_arr = []
 
         self.status = StateEnum.MAIN_MENU

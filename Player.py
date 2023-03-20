@@ -1,6 +1,6 @@
 import pygame
 from support import import_enemy_spritesheet
-from settings import screen_h
+from settings import s
 
 
 class Player(pygame.sprite.Sprite):
@@ -49,6 +49,9 @@ class Player(pygame.sprite.Sprite):
                 self.attack = False
 
         image = animation[int(self.frame_index)]
+        #w, h = image.get_size()
+        #image = pygame.transform.scale(image, (w * s.scale_w, h * s.scale_h))
+        #image.set_colorkey((0,0,0))
         if self.facing_right:
             self.image = image
         else:
@@ -87,7 +90,7 @@ class Player(pygame.sprite.Sprite):
             self.jump()
 
     def check_death(self):
-        return self.rect.centerx > screen_h
+        return self.rect.centerx > s.screen_h
 
     def jump(self):
         self.direction.y = self.jump_speed

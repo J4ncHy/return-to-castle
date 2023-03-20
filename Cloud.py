@@ -1,5 +1,5 @@
 import pygame
-
+from settings import s
 
 class Cloud(pygame.sprite.Sprite):
     def __init__(self, pos):

@@ -3,7 +3,7 @@ import csv
 
 from Enemy import Enemy
 from Tiles import Tiles
-from settings import tile_size, screen_w, screen_h
+from settings import s
 from Player import Player
 from PowerUps import Powerups
 from Coin import Coin
@@ -16,7 +16,7 @@ from Spikes import Spike
 
 
 class Level:
-    def __init__(self, surface, menu):
+    def __init__(self, display, surface, menu):
         self.level = 0
         self.cnt = 0
         self.ambience = [(135, 206, 235), (135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
@@ -39,7 +39,8 @@ class Level:
 
         self.sound = SoundHandler()
 
-        self.display_surface = surface
+        self.display_surface = display
+        self.srf = surface
         self.setup_level(self.import_level_from_tilemap())
         self.world_shift = 0
 
@@ -95,8 +96,8 @@ class Level:
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
-                y = i * tile_size
-                x = j * tile_size
+                y = i * s.tile_size
+                x = j * s.tile_size
 
                 if col == "49":
                     playerSprite = Player((x, y), self.sound)
@@ -124,11 +125,11 @@ class Level:
                     spike = Spike((x, y))
                     self.spikes.add(spike)
                 elif int(col) >= 0:
-                    tile = Tiles((x, y), tile_size, col)
+                    tile = Tiles((x, y), s.tile_size, col)
                     self.tiles.add(tile)
 
         if self.level == 0:
-            self.menu.createText(pygame.Rect(coords["player"], 200, 250, 180), "Use the arrow keys to move and jump")
+            self.menu.createText(pygame.Rect(coords["player"], 200, 250 * s.scale_h, 180), "Use the arrow keys to move and jump")
             self.menu.createText(pygame.Rect(coords["coin"], 200, 120, 180), "Pick up coins")
             self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle. They hold your princess hostage")
             #self.menu.createText(pygame.Rect(1900, 200, 270, 180), "They hold your princess hostage")
@@ -140,10 +141,10 @@ class Level:
         direction_x = player.direction.x
         speed = player.default_speed
 
-        if player_x < 0.4 * screen_w and direction_x < 0:
+        if player_x < 0.4 * s.screen_w and direction_x < 0:
             self.world_shift = speed
             player.speed = 0
-        elif player_x > 0.6 * screen_w and direction_x > 0:
+        elif player_x > 0.6 * s.screen_w and direction_x > 0:
             self.world_shift = -speed
             player.speed = 0
         else:
@@ -179,7 +180,7 @@ class Level:
     def horizontal_world_enemies_movement_collision(self):
         for enemy in self.enemies_weak:
             enemy.rect.x += enemy.direction.x * enemy.speed
-            if enemy.rect.x < enemy.starting_coords[0] - 128 or enemy.rect.x > enemy.starting_coords[0] + 128:
+            if enemy.rect.x < enemy.starting_coords[0] - (128 * s.scale_w) or enemy.rect.x > enemy.starting_coords[0] + (128 * s.scale_w):
                 enemy.direction.x *= -1
             for tile in self.tiles:
                 if tile.rect.colliderect(enemy.rect):
@@ -218,7 +219,6 @@ class Level:
 
     def player_flag_collisions(self):
         player = self.player.sprite
-        # if self.flag.sprite.rect.colliderect(player.rect):
         if pygame.sprite.collide_mask(player, self.flag.sprite):
             time = (pygame.time.get_ticks() - self.start_time) / 1000
             write_score(level=self.level, score=self.score, time=round(time, 1))
@@ -228,51 +228,49 @@ class Level:
         player = self.player.sprite
         for spike in self.spikes:
             if pygame.sprite.collide_mask(player, spike):
-                #self.score += 10
                 player.kill()
                 print("test")
-                #self.sound.play_coin()
 
     def check_game_end(self):
         player = self.player.sprite
-        return player.rect.top > screen_h or self.player.sprite.dead
+        return player.rect.top > s.screen_h or self.player.sprite.dead
 
     def draw(self, ticks):
 
         # Background
 
-        self.display_surface.fill(self.ambience[self.level])
-        self.display_surface.blit(self.background_image, (0, 0))
+        self.srf.fill(self.ambience[self.level])
+        self.srf.blit(self.background_image, (0, 0))
 
         # Level clouds
 
         self.clouds.update(self.world_shift)
-        self.clouds.draw(self.display_surface)
+        self.clouds.draw(self.srf)
 
         # Level flag
 
         self.flag.update(self.world_shift)
-        self.flag.draw(self.display_surface)
+        self.flag.draw(self.srf)
 
         # Level tiles
         self.tiles.update(self.world_shift)
-        self.tiles.draw(self.display_surface)
+        self.tiles.draw(self.srf)
         self.scroll_x()
 
         # Level player
         self.player.update()
         self.horizontal_world_player_movement_collision()
         self.vertical_world_player_movement_collision()
-        self.player.draw(self.display_surface)
+        self.player.draw(self.srf)
 
         # Level powerups
-        self.powerups.draw(self.display_surface)
+        self.powerups.draw(self.srf)
         self.player_powerups_collision()
         self.powerups.update(self.world_shift)
 
         # Level enemies
         self.enemies_weak.update(self.world_shift)
-        self.enemies_weak.draw(self.display_surface)
+        self.enemies_weak.draw(self.srf)
         self.player_enemy_collision()
         self.horizontal_world_enemies_movement_collision()
 
@@ -280,13 +278,13 @@ class Level:
 
         self.coins.update(self.world_shift)
         self.player_coin_collisions()
-        self.coins.draw(self.display_surface)
+        self.coins.draw(self.srf)
 
         # Level spikes
 
         self.spikes.update(self.world_shift)
         self.player_spikes_collisions()
-        self.spikes.draw(self.display_surface)
+        self.spikes.draw(self.srf)
 
         # Draw menu items
 
@@ -299,3 +297,6 @@ class Level:
         # Level player collision
 
         self.player_flag_collisions()
+        print(self.srf.get_size())
+
+        self.display_surface.blit(pygame.transform.scale(self.srf, (s.original_w * s.scale_w, s.original_h * s.scale_h)), (0, 0))
