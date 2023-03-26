@@ -39,7 +39,7 @@ if __name__ == "__main__":
             time = (pygame.time.get_ticks() - level.start_time) / 1000
             # write_score(player=level.player.name, level=level.level, score=level.score, time=round(time, 1))
             write_score(level=level.level, score=level.score, time=round(time, 1))
-            level.level_handler(0)
+            level.level_handler(1)
             main_menu.set_state(StateEnum.DEAD_MENU)
         level.draw(tmp)
         pygame.display.update()

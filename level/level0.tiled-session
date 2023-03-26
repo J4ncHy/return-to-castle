@@ -3,10 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level_data/level4.tmx",
+    "activeFile": "level_data/level6.tmx",
     "expandedProjectPaths": [
-        ".",
-        "level_data"
+        "level_data",
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -32,16 +32,16 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 823.0979804762152,
+                "x": 823.0979804762153,
                 "y": 192.13883580393576
             }
         },
         "level_data/level0.tmx": {
-            "scale": 1.2100624999999998,
+            "scale": 1.21,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 799.9586798202573,
-                "y": 192.13883580393576
+                "x": 800,
+                "y": 192.14876033057845
             }
         },
         "level_data/level0tmx.tmx": {
@@ -56,7 +56,7 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 799.9586798202573,
+                "x": 799.9586798202574,
                 "y": 192.13883580393576
             }
         },
@@ -64,7 +64,7 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 799.9586798202573,
+                "x": 799.9586798202574,
                 "y": 192.13883580393576
             }
         },
@@ -72,11 +72,19 @@
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
+                "x": 799.9586798202574,
+                "y": 53.30303186818861
+            }
+        },
+        "level_data/level5.tmx": {
+            "scale": 1.2100624999999998,
+            "selectedLayer": 0,
+            "viewCenter": {
                 "x": 800.7850834151129,
                 "y": 192.13883580393576
             }
         },
-        "level_data/level5.tmx": {
+        "level_data/level6.tmx": {
             "scale": 1.2100624999999998,
             "selectedLayer": 0,
             "viewCenter": {
@@ -101,21 +109,23 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 50,
     "openFiles": [
-        "level_data/level1.tmx",
         "level_data/tileset.tsx",
         "level_data/islands.tmx",
         "level_data/level0.tmx",
+        "level_data/level1.tmx",
+        "level_data/level2.tmx",
         "level_data/level4.tmx",
-        "level_data/level2.tmx"
+        "level_data/level6.tmx"
     ],
     "project": "level0.tiled-project",
     "recentFiles": [
-        "level_data/level1.tmx",
         "level_data/tileset.tsx",
         "level_data/islands.tmx",
         "level_data/level0.tmx",
+        "level_data/level1.tmx",
         "level_data/level2.tmx",
         "level_data/level4.tmx",
+        "level_data/level6.tmx",
         "level_data/level0tmx.tmx",
         "flag.tsx",
         "Tileset.tsx",

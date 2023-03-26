@@ -298,6 +298,8 @@ class Level:
 
         self.main_menu.update(self)
 
+        self.menu.update(ticks, self.world_shift, self.player.sprite.rect.x)
+
         # Level player collision
 
         self.player_flag_collisions()
