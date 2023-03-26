@@ -1,11 +1,14 @@
 import pygame
+
+from StateEnum import StateEnum
 from support import import_enemy_spritesheet
 from settings import s
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, sound):
+    def __init__(self, pos, sound, menu):
         super().__init__()
+        self.menu = menu
         self.dead = False
         self.animations = None
         self.import_character_assets()
@@ -74,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
-            ...
+            self.menu.set_state(StateEnum.PAUSE_MENU)
         if keys[pygame.K_SPACE]:
             self.attack = True
         if keys[pygame.K_RIGHT]:
@@ -90,6 +93,7 @@ class Player(pygame.sprite.Sprite):
             self.jump()
 
     def check_death(self):
+
         return self.rect.centerx > s.screen_h
 
     def jump(self):

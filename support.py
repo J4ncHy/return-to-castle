@@ -62,3 +62,6 @@ def import_player_spritesheet(path, width, height):
     for i in range(int(wid / width)):
         # Idle
         ...
+
+def get_font(size):
+    return pygame.font.Font('./media/font/Hardpixel.OTF', size)

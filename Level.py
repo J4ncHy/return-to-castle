@@ -2,6 +2,7 @@ import pygame
 import csv
 
 from Enemy import Enemy
+from StateEnum import StateEnum
 from Tiles import Tiles
 from settings import s
 from Player import Player
@@ -16,7 +17,8 @@ from Spikes import Spike
 
 
 class Level:
-    def __init__(self, display, surface, menu):
+    def __init__(self, display, surface, menu, main_menu):
+        self.main_menu = main_menu
         self.level = 0
         self.cnt = 0
         self.ambience = [(135, 206, 235), (135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
@@ -51,10 +53,12 @@ class Level:
         background_img = "level/background/BG{}.png".format(self.level)  # "media/background_cloud.png"
         self.background_image = pygame.image.load(background_img).convert_alpha()
 
-    def level_handler(self):
-        self.score += 100
-        self.level += 1
+    def level_handler(self, level):
+        self.score = 0
+        self.level = level
 
+        self.menu.deleteTextBox()
+        self.menu.text_arr = []
         del self.start_time
         del self.enemies_guns
         del self.flag
@@ -100,7 +104,7 @@ class Level:
                 x = j * s.tile_size
 
                 if col == "49":
-                    playerSprite = Player((x, y), self.sound)
+                    playerSprite = Player((x, y), self.sound, self.main_menu)
                     self.player.add(playerSprite)
                     if coords["player"] == 0:
                         coords["player"] = x
@@ -129,10 +133,9 @@ class Level:
                     self.tiles.add(tile)
 
         if self.level == 0:
-            self.menu.createText(pygame.Rect(coords["player"], 200, 250 * s.scale_h, 180), "Use the arrow keys to move and jump")
+            self.menu.createText(pygame.Rect(coords["player"], 200, 250, 180), "Use the arrow keys to move and jump")
             self.menu.createText(pygame.Rect(coords["coin"], 200, 120, 180), "Pick up coins")
-            self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle. They hold your princess hostage")
-            #self.menu.createText(pygame.Rect(1900, 200, 270, 180), "They hold your princess hostage")
+            self.menu.createText(pygame.Rect(1400, 200, 260, 180), "Robbers have taken your castle and they hold your princess hostage")
             self.menu.createText(pygame.Rect(1900, 200, 270, 180), "You need to save her")
 
     def scroll_x(self):
@@ -200,6 +203,7 @@ class Level:
                     enemy.animation_speed = 0.10
                 else:
                     player.dead = True
+                    self.main_menu.set_state(StateEnum.DEAD_MENU)
 
     def player_powerups_collision(self):
         player = self.player.sprite
@@ -222,14 +226,14 @@ class Level:
         if pygame.sprite.collide_mask(player, self.flag.sprite):
             time = (pygame.time.get_ticks() - self.start_time) / 1000
             write_score(level=self.level, score=self.score, time=round(time, 1))
-            self.level_handler()
+            self.level_handler(self.level+1)
 
     def player_spikes_collisions(self):
         player = self.player.sprite
         for spike in self.spikes:
             if pygame.sprite.collide_mask(player, spike):
-                player.kill()
-                print("test")
+                self.main_menu.set_state(StateEnum.DEAD_MENU)
+                player.dead = True
 
     def check_game_end(self):
         player = self.player.sprite
@@ -288,15 +292,16 @@ class Level:
 
         # Draw menu items
 
-        # self.menu.draw_score(self.score)
-        # time = (pygame.time.get_ticks() - self.start_time) / 1000
-        # self.menu.draw_time(round(time, 1))
+        self.main_menu.draw_score(self.score)
+        time = (pygame.time.get_ticks() - self.start_time) / 1000
+        self.main_menu.draw_time(round(time, 1))
 
-        self.menu.update(ticks, self.world_shift, self.player.sprite.rect.x)
+        self.main_menu.update(self)
 
         # Level player collision
 
         self.player_flag_collisions()
-        print(self.srf.get_size())
+
+        # Resize
 
         self.display_surface.blit(pygame.transform.scale(self.srf, (s.original_w * s.scale_w, s.original_h * s.scale_h)), (0, 0))
