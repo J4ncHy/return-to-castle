@@ -7,6 +7,13 @@ const port: number = 3000;
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.append('Access-Control-Allow-Origin', ['*']);
+    res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.append('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 connect(`mongodb://192.168.128.8:27017/RTC_score`);
 const db = connection;
 
