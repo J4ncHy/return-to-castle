@@ -12,7 +12,7 @@ class Barrel(pygame.sprite.Sprite):
 
         self.direction = pygame.math.Vector2(0, 0)
         self.direction.x = direction
-        self.speed = 2
+        self.speed = 5
         self.starting_pos = pos
         self.angle = 0
 
@@ -23,6 +23,10 @@ class Barrel(pygame.sprite.Sprite):
 
     def move(self):
         self.rect.x += self.direction.x * self.speed
+        print(self.rect.x, self.starting_pos[0])
+        if abs(self.starting_pos[0] - self.rect.x) > 500:
+            self.kill()
+
         #self.angle += 1
         #center = self.rect.center
         #self.image = pygame.transform.rotate(self.image, self.angle)

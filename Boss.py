@@ -30,7 +30,7 @@ class Boss(pygame.sprite.Sprite):
         # Movement
 
         self.direction = pygame.math.Vector2(0, 0)
-        self.direction.x = -1
+        self.direction.x = 0
         self.speed = 1
 
     def import_boss_assets(self):
@@ -42,8 +42,6 @@ class Boss(pygame.sprite.Sprite):
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
-            if self.status == "dead":
-                self.kill()
 
         image = animation[int(self.frame_index)]
         if self.facing_right:
@@ -60,6 +58,8 @@ class Boss(pygame.sprite.Sprite):
         if self.status == "dead":
             self.speed = 0
             return
+        if self.status in ["attack1", "attack2"]:
+            return
         if self.direction.x > 0:
             self.status = "run"
             self.facing_right = True
@@ -72,10 +72,8 @@ class Boss(pygame.sprite.Sprite):
     def get_direction(self, player):
         if player.rect.x - self.rect.x < 0:
             self.facing_right = False
-            self.direction.x = -1
             return
         self.facing_right = True
-        self.direction.x = 1
 
     def set_last_hit(self, time):
         self.last_hit = time
@@ -98,6 +96,6 @@ class Boss(pygame.sprite.Sprite):
     def update(self, x_shift, player):
         self.rect.x += x_shift
         # self.starting_coords[0] += x_shift
-        # self.get_state()
+        self.get_state()
         self.get_direction(player)
         self.animate()
