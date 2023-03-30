@@ -1,6 +1,7 @@
 import pygame
 import csv
 
+from Barrel import Barrel
 from Enemy import Enemy
 from StateEnum import StateEnum
 from Tiles import Tiles
@@ -14,6 +15,8 @@ from Flag import Flag
 from SoundHandler import SoundHandler
 from HighscoreHandler import write_score
 from Spikes import Spike
+from Boss import Boss
+from Hearts import Hearts
 
 
 class Level:
@@ -34,10 +37,12 @@ class Level:
         self.tiles = None
         self.player = None
         self.enemies_weak = None
-        # self.bullets = None
+        self.boss = None
+        self.barrels = None
         self.spikes = None
         self.coins = None
         self.background_image = None
+        self.hearts = None
 
         self.sound = SoundHandler()
 
@@ -70,6 +75,9 @@ class Level:
         del self.coins
         del self.background_image
         del self.spikes
+        del self.boss
+        del self.barrels
+        del self.hearts
 
         self.world_shift = 0
         self.setup_level(self.import_level_from_tilemap())
@@ -97,6 +105,9 @@ class Level:
         self.clouds = pygame.sprite.Group()
         self.flag = pygame.sprite.GroupSingle()
         self.spikes = pygame.sprite.Group()
+        self.boss = pygame.sprite.GroupSingle()
+        self.barrels = pygame.sprite.Group()
+        self.hearts = pygame.sprite.Group()
 
         for i, row in enumerate(layout):
             for j, col in enumerate(row):
@@ -128,6 +139,16 @@ class Level:
                 elif col == "52":
                     spike = Spike((x, y))
                     self.spikes.add(spike)
+                elif col == "52":
+                    spike = Spike((x, y))
+                    self.spikes.add(spike)
+                elif col == "47":
+                    boss = Boss((x, y))
+                    self.boss.add(boss)
+                    for x in range(boss.lives):
+                        heart = Hearts((825 + (x*34), 25))
+                        self.hearts.add(heart)
+
                 elif int(col) >= 0:
                     tile = Tiles((x, y), s.tile_size, col)
                     self.tiles.add(tile)
@@ -194,6 +215,15 @@ class Level:
                         enemy.rect.right = tile.rect.left
                     enemy.direction.x *= -1
 
+    def horizontal_world_boss_movement_collision(self):
+        player = self.player.sprite
+        boss = self.boss.sprite
+        if boss.player_detection(player):
+            boss.direction.x = 1 if boss.facing_right else -1
+            boss.rect.x += boss.direction.x * boss.speed
+        else:
+            boss.direction.x = 0
+
     def player_enemy_collision(self):
         player = self.player.sprite
         for enemy in self.enemies_weak:
@@ -201,9 +231,10 @@ class Level:
                 if player.attack:
                     enemy.status = "dead"
                     enemy.animation_speed = 0.10
+                    self.score += 5
                 else:
-                    player.dead = True
                     self.main_menu.set_state(StateEnum.DEAD_MENU)
+                    player.dead = True
 
     def player_powerups_collision(self):
         player = self.player.sprite
@@ -235,6 +266,52 @@ class Level:
                 self.main_menu.set_state(StateEnum.DEAD_MENU)
                 player.dead = True
 
+    def player_boss_interactions(self, time):
+        player = self.player.sprite
+        boss = self.boss.sprite
+        if pygame.sprite.collide_mask(player, boss):
+            if boss.status in ["attack1", "attack2"]:
+                self.main_menu.set_state(StateEnum.DEAD_MENU)
+                player.dead = True
+            if player.attack and abs(boss.last_hit - time) > 1:
+                boss.lives -= 1
+                boss.set_last_hit(time)
+                self.remove_hearts()
+                if boss.lives == 8:
+                    boss.status = "dead"
+
+    def boss_spawn_barrel(self, time):
+        player = self.player.sprite
+        boss = self.boss.sprite
+        if boss.player_barrel_detection(player) and abs(time - boss.prev_barrel_spawn) > 2:
+            barrel = Barrel((boss.rect.x + (boss.direction.x * 4), boss.rect.y), 1 if boss.facing_right else -1)
+            self.barrels.add(barrel)
+            boss.set_prev_barrel_time(time)
+            boss.status = "attack2"
+
+    def boss_reactions(self, time):
+        player = self.player.sprite
+        boss = self.boss.sprite
+        print(boss.direction.x)
+        if boss.player_in_proximity(player) and abs(time - boss.last_attack) > 1.2:
+            boss.status = "attack1"
+            boss.set_last_attack(time)
+        elif boss.frame_index == 0 and boss.status != "dead":
+            boss.status = "idle"
+
+    def player_barrel_collision(self):
+        player = self.player.sprite
+        for barrel in self.barrels:
+            if pygame.sprite.collide_mask(player, barrel):
+                self.main_menu.set_state(StateEnum.DEAD_MENU)
+                player.dead = True
+
+    def remove_hearts(self):
+        self.hearts.empty()
+        for x in range(self.boss.sprite.lives):
+            heart = Hearts((825 + (x * 34), 25))
+            self.hearts.add(heart)
+
     def check_game_end(self):
         player = self.player.sprite
         return player.rect.top > s.screen_h or self.player.sprite.dead
@@ -255,6 +332,8 @@ class Level:
 
         self.flag.update(self.world_shift)
         self.flag.draw(self.srf)
+        if self.level == 5:
+            self.srf.blit(self.flag.sprite.castle, (self.flag.sprite.rect.x - 128, self.flag.sprite.rect.y - 192))
 
         # Level tiles
         self.tiles.update(self.world_shift)
@@ -292,12 +371,34 @@ class Level:
 
         # Draw menu items
 
-        self.main_menu.draw_score(self.score)
         time = (pygame.time.get_ticks() - self.start_time) / 1000
         self.main_menu.draw_time(round(time, 1))
+        self.main_menu.draw_score(self.score)
+
+        # Boss
+
+        if self.boss.sprite is not None and (self.boss.sprite.status != "dead" or self.boss.sprite.frame_index != 0):
+            self.boss.update(self.world_shift, self.player.sprite)
+            self.player_boss_interactions(time)
+            self.horizontal_world_boss_movement_collision()
+            self.boss_spawn_barrel(time)
+            self.boss_reactions(time)
+            self.boss.draw(self.srf)
+            self.sound.play_boss_walk(self.player.sprite, self.boss.sprite)
+
+        # Barrels
+
+        self.barrels.update(self.world_shift)
+        self.player_barrel_collision()
+        self.barrels.draw(self.srf)
+
+        # Hearts
+        self.hearts.update()
+        self.hearts.draw(self.srf)
+
+        # Main menu updates
 
         self.main_menu.update(self)
-
         self.menu.update(ticks, self.world_shift, self.player.sprite.rect.x)
 
         # Level player collision

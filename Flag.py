@@ -6,6 +6,7 @@ class Flag(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
         self.image = None
+        self.castle = None
         self.animations = None
         self.import_assets()
 
@@ -18,6 +19,8 @@ class Flag(pygame.sprite.Sprite):
     def import_assets(self):
         flag_image = "media/flag.png"
         self.animations = import_spritesheet(flag_image, 64, 64)
+        self.castle = pygame.image.load("media/castle.png").convert_alpha()
+        self.castle.set_colorkey((0, 0, 255))
 
     def animate(self):
         self.frame_index += self.animation_speed

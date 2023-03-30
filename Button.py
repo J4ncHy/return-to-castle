@@ -1,7 +1,9 @@
+import pygame.transform
+
 from settings import s
 
 class Button:
-    def __init__(self, pos, image, font, base_color,hover_color, text_input):
+    def __init__(self, pos, image, font, base_color, hover_color, text_input):
         self.x, self.y = pos
 
         self.image = image
@@ -11,8 +13,8 @@ class Button:
         self.text = self.font.render(self.text_input, True, self.base_color)
         if self.image is None:
             self.image = self.text
-        self.rect = self.image.get_rect(center=(self.x, self.y))
         self.text_rect = self.text.get_rect(center=(self.x, self.y))
+        self.rect = self.image.get_rect(center=(self.x, self.y))
 
     def update(self, screen):
         if self.image is not None:
