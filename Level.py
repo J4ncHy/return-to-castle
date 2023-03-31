@@ -24,7 +24,7 @@ class Level:
         self.main_menu = main_menu
         self.level = 0
         self.cnt = 0
-        self.ambience = [(135, 206, 235), (135, 206, 235), (178, 227, 247), (255, 248, 219), (244, 128, 55), (0, 0, 0)]
+        self.ambience = [(135, 206, 235), (135, 206, 235),  (178, 227, 247), (178, 227, 247), (255, 248, 219), (255, 248, 219), (244, 128, 55),  (244, 128, 55), (0, 0, 0), (0, 0, 0)]
 
         self.menu = menu
 
@@ -254,10 +254,17 @@ class Level:
 
     def player_flag_collisions(self):
         player = self.player.sprite
-        if pygame.sprite.collide_mask(player, self.flag.sprite):
-            time = (pygame.time.get_ticks() - self.start_time) / 1000
-            write_score(level=self.level, score=self.score, time=round(time, 1))
-            self.level_handler(self.level+1)
+        if self.level == 9:
+            if self.boss.sprite.status == "dead":
+                if pygame.sprite.collide_mask(player, self.flag.sprite):
+                    time = (pygame.time.get_ticks() - self.start_time) / 1000
+                    write_score(level=self.level, score=self.score, time=round(time, 1))
+                    self.main_menu.set_state(StateEnum.WIN)
+        else:
+            if pygame.sprite.collide_mask(player, self.flag.sprite):
+                time = (pygame.time.get_ticks() - self.start_time) / 1000
+                write_score(level=self.level, score=self.score, time=round(time, 1))
+                self.level_handler(self.level + 1)
 
     def player_spikes_collisions(self):
         player = self.player.sprite
@@ -277,7 +284,7 @@ class Level:
                 boss.lives -= 1
                 boss.set_last_hit(time)
                 self.remove_hearts()
-                if boss.lives == 8:
+                if boss.lives == 0:
                     boss.status = "dead"
 
     def boss_spawn_barrel(self, time):
@@ -323,21 +330,38 @@ class Level:
         self.srf.fill(self.ambience[self.level])
         self.srf.blit(self.background_image, (0, 0))
 
+        # Tint with color
+
+        if self.ambience[self.level] == (0, 0, 0):
+            new_surf = pygame.Surface((s.screen_w, s.screen_h), pygame.SRCALPHA)
+            new_surf.fill((0, 0, 0, 128))
+            self.srf.blit(new_surf, (0, 0))
+
         # Level clouds
 
         self.clouds.update(self.world_shift)
-        self.clouds.draw(self.srf)
+        for x in self.clouds:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
 
         # Level flag
 
         self.flag.update(self.world_shift)
-        self.flag.draw(self.srf)
-        if self.level == 5:
+        if -64 < self.flag.sprite.rect.x < s.screen_w:
+            self.flag.draw(self.srf)
+        if self.level == 9:
             self.srf.blit(self.flag.sprite.castle, (self.flag.sprite.rect.x - 128, self.flag.sprite.rect.y - 192))
 
         # Level tiles
+
         self.tiles.update(self.world_shift)
-        self.tiles.draw(self.srf)
+        for x in self.tiles:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
         self.scroll_x()
 
         # Level player
@@ -347,27 +371,45 @@ class Level:
         self.player.draw(self.srf)
 
         # Level powerups
-        self.powerups.draw(self.srf)
-        self.player_powerups_collision()
+
         self.powerups.update(self.world_shift)
+        self.player_powerups_collision()
+        for x in self.powerups:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
 
         # Level enemies
+
         self.enemies_weak.update(self.world_shift)
-        self.enemies_weak.draw(self.srf)
         self.player_enemy_collision()
         self.horizontal_world_enemies_movement_collision()
+        for x in self.enemies_weak:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
 
         # Level coins
 
         self.coins.update(self.world_shift)
         self.player_coin_collisions()
-        self.coins.draw(self.srf)
+        for x in self.coins:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
 
         # Level spikes
 
         self.spikes.update(self.world_shift)
         self.player_spikes_collisions()
-        self.spikes.draw(self.srf)
+        for x in self.spikes:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                tmp.draw(self.srf)
 
         # Draw menu items
 
@@ -377,20 +419,25 @@ class Level:
 
         # Boss
 
-        if self.boss.sprite is not None and (self.boss.sprite.status != "dead" or self.boss.sprite.frame_index != 0):
+        if self.level == 9 and self.boss.sprite is not None and (self.boss.sprite.status != "dead" or self.boss.sprite.frame_index != 0):
             self.boss.update(self.world_shift, self.player.sprite)
             self.player_boss_interactions(time)
             self.horizontal_world_boss_movement_collision()
             self.boss_spawn_barrel(time)
             self.boss_reactions(time)
-            self.boss.draw(self.srf)
+            if -64 < self.boss.sprite.rect.x < s.screen_w:
+                self.boss.draw(self.srf)
             self.sound.play_boss_walk(self.player.sprite, self.boss.sprite)
 
         # Barrels
 
-        self.barrels.update(self.world_shift)
+        self.barrels.update(self.world_shift, self.srf)
         self.player_barrel_collision()
-        self.barrels.draw(self.srf)
+        for x in self.barrels:
+            if -64 < x.rect.x < s.screen_w:
+                tmp = pygame.sprite.GroupSingle()
+                tmp.add(x)
+                #tmp.draw(new_surf2)
 
         # Hearts
         self.hearts.update()

@@ -12,13 +12,15 @@ def read_score():
 
 def write_score(level, score, time):
     scoreTemplate = {
-        "player": "TeST",
+        "player": "Player",
         "level": level+1,
         "score": score,
         "time": time
     }
+
     api_url = "https://rtc.picka.si/api/create"
     response = requests.put(api_url, json=scoreTemplate)
+
     print(response)
 
 """

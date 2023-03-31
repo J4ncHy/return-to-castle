@@ -7,3 +7,4 @@ class StateEnum(Enum):
     PAUSE_MENU = "PAUSE_MENU"
     DEAD_MENU = "DEAD_MENU"
     SCOREBOARD = "SCOREBOARD"
+    WIN = "WIN"

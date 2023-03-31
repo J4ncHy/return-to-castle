@@ -21,17 +21,19 @@ class Barrel(pygame.sprite.Sprite):
         self.image = pygame.image.load(path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (64, 64))
 
-    def move(self):
+    def move(self, srf):
         self.rect.x += self.direction.x * self.speed
         print(self.rect.x, self.starting_pos[0])
         if abs(self.starting_pos[0] - self.rect.x) > 500:
             self.kill()
 
-        #self.angle += 1
-        #center = self.rect.center
-        #self.image = pygame.transform.rotate(self.image, self.angle)
-        #self.rect = self.image.get_rect(center=center)
+        self.angle += 4
 
-    def update(self, x_shift):
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        new_rect = rotated_image.get_rect(center=self.image.get_rect(topleft=(self.rect.x, self.rect.y)).center)
+
+        srf.blit(rotated_image, new_rect)
+
+    def update(self, x_shift, srf):
         self.rect.x += x_shift
-        self.move()
+        self.move(srf)

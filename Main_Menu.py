@@ -86,6 +86,11 @@ class Main_Menu:
                 Button(pos=(s.screen_w / 2, 500), image=None, font=get_font(40),
                        hover_color="#3d4b4d",
                        base_color="#181c1c", text_input="MAIN MENU")
+            ],
+            "win": [
+                Button(pos=(s.screen_w / 2, 500), image=None, font=get_font(40),
+                       hover_color="#3d4b4d",
+                       base_color="#181c1c", text_input="MAIN MENU")
             ]
         }
 
@@ -102,6 +107,8 @@ class Main_Menu:
                 self.pause_menu()
             case StateEnum.DEAD_MENU:
                 self.dead_menu()
+            case StateEnum.WIN:
+                self.win_menu()
 
     def main_menu(self, level):
         while self.state == StateEnum.MAIN_MENU:
@@ -318,6 +325,46 @@ class Main_Menu:
                 if event.type == pygame.MOUSEBUTTONDOWN and self.mouse_pressed == False:
                     self.mouse_pressed = True
                     for button in self.buttons["dead"]:
+                        if button.check_for_input(MOUSE_POS):
+                            if button.text_input == "MAIN MENU":
+                                self.set_state(StateEnum.MAIN_MENU)
+
+            pygame.display.update()
+            pygame.time.Clock().tick(60)
+
+    def win_menu(self):
+        while self.state == StateEnum.WIN:
+
+            self.surface.fill((135, 206, 235))
+            bg_img = "./level/background/BG0.png"
+            background_image = pygame.image.load(bg_img).convert_alpha()
+            self.surface.blit(background_image, (0, 0))
+
+            MOUSE_POS = pygame.mouse.get_pos()
+            text = get_font(50).render("YOU SAVED YOUR PRINCESS", True, (255, 255, 255))
+            textRect = text.get_rect()
+            textRect.center = (s.screen_w / 2, 200)
+            self.surface.blit(text, textRect)
+
+            for button in self.buttons["win"]:
+                button.change_color(MOUSE_POS)
+                button.update(self.surface)
+
+            self.display.blit(
+                pygame.transform.scale(self.surface, (s.original_w * s.scale_w, s.original_h * s.scale_h)), (0, 0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.VIDEORESIZE:
+                    self.display = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                    s.scale_w = event.w / s.original_w
+                    s.scale_h = event.h / s.original_h
+                if event.type == pygame.MOUSEBUTTONUP:
+                    self.mouse_pressed = False
+                if event.type == pygame.MOUSEBUTTONDOWN and self.mouse_pressed == False:
+                    self.mouse_pressed = True
+                    for button in self.buttons["win"]:
                         if button.check_for_input(MOUSE_POS):
                             if button.text_input == "MAIN MENU":
                                 self.set_state(StateEnum.MAIN_MENU)
