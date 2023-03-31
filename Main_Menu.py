@@ -1,7 +1,6 @@
 import pygame
 from StateEnum import StateEnum
 from settings import s
-from HighscoreHandler import read_score
 from Button import Button
 from support import get_font
 import pygame_gui
