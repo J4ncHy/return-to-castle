@@ -2,12 +2,12 @@ import json
 import requests
 
 
-def read_score():
-    with open("data/highscore.json", "r") as openfile:
-        json_object = json.load(openfile)
-    openfile.close()
-
-    return json_object
+#def read_score():
+#    with open("data/highscore.json", "r") as openfile:
+#        json_object = json.load(openfile)
+#    openfile.close()
+#
+#    return json_object
 
 
 def write_score(level, score, time):
